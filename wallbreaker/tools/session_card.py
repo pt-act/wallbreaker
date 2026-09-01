@@ -440,6 +440,13 @@ async def render_card_chrome(target_model: str, rows: list[dict], stamp: str, fo
             "--headless=new",
             "--disable-gpu",
             "--hide-scrollbars",
+            "--no-sandbox",              # root/CI sandboxes refuse the default sandbox
+            "--disable-dev-shm-usage",   # small /dev/shm on CI containers OOMs the renderer
+            "--disable-extensions",
+            "--no-first-run",
+            "--no-default-browser-check",
+            "--disable-crash-reporter",
+            f"--user-data-dir={os.path.join(tmp_dir, 'profile')}",  # isolated profile; skips first-run waits
             f"--force-device-scale-factor={_CARD_SCALE}",
             f"--window-size={_CARD_WIDTH_CSS},{height}",
             "--virtual-time-budget=2500",
