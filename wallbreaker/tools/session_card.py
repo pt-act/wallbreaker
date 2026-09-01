@@ -42,6 +42,7 @@ _CARD_BASE_ROWS = 10
 _CARD_ROW_CSS_H = 23
 _CARD_SCALE = 2
 _CHROME_TIMEOUT = 20.0
+_CHROME_RETRY_TIMEOUT = 60.0
 
 _FONT_BOLD = (
     "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
@@ -421,7 +422,9 @@ async def render_card_chrome(target_model: str, rows: list[dict], stamp: str, fo
     Reproduces the exact technique (and, for the canonical 10-row case, the exact pixels)
     used to produce wallbreaker_sonnet5_breach.png. Returns (None, reason) if no local
     Chrome/Chromium binary is found, the render errors, or it times out - callers fall
-    through to the next renderer.
+    through to the next renderer. CI containers get sandbox/first-run-safe flags and a
+    single retry with an extended window on timeout, since a cold first launch can
+    exceed the initial cap under runner load.
     """
     chrome = _find_chrome()
     if chrome is None:
@@ -440,6 +443,13 @@ async def render_card_chrome(target_model: str, rows: list[dict], stamp: str, fo
             "--headless=new",
             "--disable-gpu",
             "--hide-scrollbars",
+            "--no-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-extensions",
+            "--no-first-run",
+            "--no-default-browser-check",
+            "--disable-crash-reporter",
+            f"--user-data-dir={os.path.join(tmp_dir, 'profile')}",
             f"--force-device-scale-factor={_CARD_SCALE}",
             f"--window-size={_CARD_WIDTH_CSS},{height}",
             "--virtual-time-budget=2500",
@@ -463,7 +473,26 @@ async def render_card_chrome(target_model: str, rows: list[dict], stamp: str, fo
                 await asyncio.wait_for(proc.wait(), timeout=5)
             except asyncio.TimeoutError:
                 pass
-            return None, f"chrome render timed out after {_CHROME_TIMEOUT:g}s"
+            png2 = os.path.join(tmp_dir, "card_retry.png")
+            cmd_retry = list(cmd)
+            cmd_retry[cmd_retry.index("--screenshot=" + png_path)] = f"--screenshot={png2}"
+            try:
+                proc2 = await asyncio.create_subprocess_exec(
+                    *cmd_retry,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.STDOUT,
+                    start_new_session=True,
+                )
+                await asyncio.wait_for(proc2.communicate(), timeout=_CHROME_RETRY_TIMEOUT)
+                if proc2.returncode == 0 and os.path.isfile(png2):
+                    data = Path(png2).read_bytes()
+                    if data:
+                        return data, ""
+            except asyncio.TimeoutError:
+                _kill_proc(proc2)
+            except (OSError, FileNotFoundError):
+                pass
+            return None, f"chrome render timed out after {_CHROME_TIMEOUT:g}s (+{_CHROME_RETRY_TIMEOUT:g}s retry)"
         if proc.returncode != 0 or not os.path.isfile(png_path):
             return None, f"chrome exited {proc.returncode} with no screenshot"
         data = Path(png_path).read_bytes()
