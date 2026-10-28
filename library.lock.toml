@@ -21,23 +21,23 @@ sha = "a171235d851cc1b1dc5fd957897e7f938ff6fe4b"
 fetched = "2026-07-23"
 note = "Resolved from local library/ZetaLib clone."
 
-# Online-only corpora — require network fetch before they can be pinned.
-# Run: wallbreaker lib update && wallbreaker corpus verify --update
+# P4RS3LT0NGV3 and L1B3RT4S fetched live from GitHub and first-pinned 2026-10-28.
+# ENI (below) is a local recovery pin — see its note before running --update.
 
 [corpus.P4RS3LT0NGV3]
 repo = "https://github.com/elder-plinius/P4RS3LT0NGV3"
-sha = "UNRESOLVED"
-fetched = "2026-07-23"
-note = "Online-only corpus; not present in this checkout. Run: wallbreaker corpus verify --update after wallbreaker lib update."
+sha = "a6cb7c9054800e106b63888d362601922477a614"
+fetched = "2026-10-28"
+note = "Pinned on 2026-10-28 via git ls-remote; cloned fresh into library/ (first pin — UNRESOLVED since 2026-07-23)."
 
 [corpus.L1B3RT4S]
 repo = "https://github.com/elder-plinius/L1B3RT4S"
-sha = "UNRESOLVED"
-fetched = "2026-07-23"
-note = "Online-only corpus; not present in this checkout. Run: wallbreaker corpus verify --update after wallbreaker lib update."
+sha = "f441d65d901b29ca92ac20ee1afb5c9d0b6f8ef6"
+fetched = "2026-10-28"
+note = "Pinned on 2026-10-28 via git ls-remote; cloned fresh into library/ (first pin — UNRESOLVED since 2026-07-23)."
 
 [corpus.ENI]
 repo = "https://github.com/elder-plinius/ENI"
-sha = "UNRESOLVED"
-fetched = "2026-07-23"
-note = "Online-only corpus; not present in this checkout. Run: wallbreaker corpus verify --update after wallbreaker lib update."
+sha = "9e639b8b5bc19c59f94650f0485ddbcb2b6772e8"
+fetched = "2026-10-28"
+note = "Recovered 2026-10-28: the upstream repo was deleted from GitHub (no rename, not archived); 30 genomes were remapped from the Spiritual-Spell-Red-Teaming snapshot (Goochbeater @ 1a90add) to the eni.py SEED_NOTES catalog stems. Pin is LOCAL (library/ENI git HEAD) — do NOT run `corpus verify --update` for this entry: ls-remote of the dead upstream fails closed by design."
