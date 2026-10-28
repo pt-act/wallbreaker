@@ -26,7 +26,7 @@ dependencies = [
     # FastMCP was removed from the mcp 2.x package; the bridge and test server use it.
     "mcp>=1.30.0,<2.0",
     "python-dotenv>=1.0",
-    "pillow>=10.0",
+    "pillow>=13.0.0",
     "pyyaml>=6.0.3",
 ]
 
@@ -69,5 +69,5 @@ dev = [
     "pytest-asyncio>=1.4.0",
     "hypothesis>=6.0",
     "fastapi>=0.115",
-    "pillow>=11.0",
+    "pillow>=13.0.0",
 ]
