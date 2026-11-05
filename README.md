@@ -67,7 +67,7 @@ an LLM judge, and reliability validation.
 
 ## Clone Repository 
 ```
-git clone https://github.com/JailbrokenAI/wallbreaker
+git clone https://github.com/pt-act/wallbreaker
 
 cd wallbreaker 
 ```
