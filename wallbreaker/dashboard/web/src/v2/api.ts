@@ -16,6 +16,7 @@ import type {
   SettingsRecord,
 } from "./types";
 import { inferEventActor } from "./eventProjection";
+import { authInit, reauth } from "../auth";
 
 class HttpError extends Error {
   constructor(public status: number, message: string) {
@@ -24,7 +25,11 @@ class HttpError extends Error {
 }
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, init);
+  let response = await fetch(url, authInit(init));
+  if (response.status === 401) {
+    await reauth(); // server restart rotated the token — re-learn and retry once
+    response = await fetch(url, authInit(init));
+  }
   if (!response.ok) {
     let message = response.statusText || `Request failed (${response.status})`;
     try {
@@ -231,7 +236,12 @@ export const v2Api = {
     signal: AbortSignal,
   ): Promise<void> {
     const url = `/api/v2/executions/${encodeURIComponent(executionId)}/events?after=${after}`;
-    const response = await fetch(url, { signal, headers: { Accept: "text/event-stream" } });
+    const init = authInit({ signal, headers: { Accept: "text/event-stream" } });
+    let response = await fetch(url, init);
+    if (response.status === 401) {
+      await reauth(); // server restart rotated the token — re-learn and retry once
+      response = await fetch(url, authInit(init));
+    }
     if (!response.ok || !response.body) throw new HttpError(response.status, response.statusText);
     const reader = response.body.getReader();
     const decoder = new TextDecoder();

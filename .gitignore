@@ -77,3 +77,7 @@ specs/
 .serena/
 *.log
 .DS_Store
+
+# local dashboard runtime artifacts (never commit: the second is the live auth token)
+.wallbreaker_dashboard_token
+wb_debug_shots/

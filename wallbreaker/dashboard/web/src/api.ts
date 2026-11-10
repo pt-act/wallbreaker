@@ -1,3 +1,5 @@
+import { authInit, reauth } from "./auth";
+
 export interface ConfigInfo {
   has_target: boolean;
   target: string | null;
@@ -229,7 +231,11 @@ export interface FireResult extends ComposeResult {
 }
 
 async function j<T>(url: string, init?: RequestInit): Promise<T> {
-  const r = await fetch(url, init);
+  let r = await fetch(url, authInit(init));
+  if (r.status === 401) {
+    await reauth(); // server restart rotated the token — re-learn and retry once
+    r = await fetch(url, authInit(init));
+  }
   if (!r.ok) {
     let detail = r.statusText;
     try {
@@ -328,12 +334,17 @@ export async function runAgent(
   onEvent: (ev: AgentEvent) => void,
   signal?: AbortSignal
 ): Promise<void> {
-  const r = await fetch("/api/agent/run", {
+  const init = authInit({
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
     signal,
   });
+  let r = await fetch("/api/agent/run", init);
+  if (r.status === 401) {
+    await reauth(); // server restart rotated the token — re-learn and retry once
+    r = await fetch("/api/agent/run", authInit(init));
+  }
   if (!r.ok || !r.body) {
     let detail = r.statusText;
     try { detail = (await r.json()).detail || detail; } catch { /* ignore */ }
