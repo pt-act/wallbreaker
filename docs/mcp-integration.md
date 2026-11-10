@@ -321,8 +321,9 @@ Output:
 }
 ```
 
-For full reference, see `parsel_guide()` output or
-[P4RS3LT0NGV3 docs](https://github.com/JailbrokenAI/p4rs3lt0ngv3).
+For full reference, see `parsel_guide()` output or the
+[vendored P4RS3LT0NGV3 docs](../library/P4RS3LT0NGV3/README.md) — the original upstream
+repo went dead with its account, so the engine is vendored and pinned in `library.lock.toml`.
 
 ---
 
