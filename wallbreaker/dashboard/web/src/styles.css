@@ -35,13 +35,27 @@ body.is-resizing-column * {
   user-select: none;
 }
 
-.app {
-  display: grid;
+.app { display: grid;
   grid-template-columns: 232px minmax(0, 1fr);
   height: 100vh;
   transition: grid-template-columns 160ms ease;
 }
 .app.rail-collapsed { grid-template-columns: 72px minmax(0, 1fr); }
+
+/* Skip link: visually hidden until keyboard-focused. position:fixed keeps it out
+   of grid flow — as a static grid child it would steal the rail's cell and shuffle
+   the whole layout (skip-link → cell 1, rail → wide column, main → narrow column). */
+.skip-link {
+  position: fixed;
+  top: -60px;
+  left: 12px;
+  z-index: 1000;
+  padding: 10px 14px;
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 700;
+}
+.skip-link:focus { top: 12px; }
 
 /* ---- sidebar ---- */
 .rail {
