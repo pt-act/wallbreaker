@@ -31,8 +31,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/JailbrokenAI/wallbreaker"
-Repository = "https://github.com/JailbrokenAI/wallbreaker"
+Homepage = "https://github.com/pt-act/wallbreaker"
+Repository = "https://github.com/pt-act/wallbreaker"
 
 [project.optional-dependencies]
 dev = [

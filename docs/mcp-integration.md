@@ -16,7 +16,7 @@ Eragon, Codex CLI, or any client that implements the Model Context Protocol over
   ```
 - **Git** — repo must be cloned:
   ```bash
-  git clone https://github.com/JailbrokenAI/wallbreaker
+  git clone https://github.com/pt-act/wallbreaker
   cd wallbreaker
   ```
 - **wallbreaker installed** — from the cloned repo:
